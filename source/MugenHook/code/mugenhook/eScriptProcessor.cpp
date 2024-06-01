@@ -372,6 +372,24 @@ int eScriptProcessor::GetCommandID(int esp)
 			result = 0;
 		}
 	}
+	else if (strcmp(commandName, "setdisplayname") == 0)
+	{
+		vm->commandID = SetDisplayName;
+
+		char* value = (char*)CNS_ReadValue(vm_cur_line, "value");
+		if (value)
+		{
+			std::string str = value;
+			str.erase(std::remove(str.begin(), str.end(), '"'), str.end());
+			AddStringToTable(str);
+			int id = FindString(str);
+			std::string output = std::to_string(id);
+			if (CNS_StoreValue((char*)output.c_str(), (int)vm + 24, vm_buff, 0, 1))
+				result = 1;
+
+		}
+		result = 1;
+	}
 	return result;
 }
 
@@ -465,6 +483,9 @@ void eScriptProcessor::ExecuteCommand(int id)
 		break;
 	case DisableTextDraw:
 		CMD_DisableTextDraw();
+		break;
+	case SetDisplayName:
+		CMD_SetDisplayName();
 		break;
 	default:
 		break;
@@ -818,5 +839,17 @@ void eScriptProcessor::CMD_SetBGM()
 		char* music = stage.ReadString("Music", "bgmusic", 0);
 		if (music)
 			LoadBGM((char*)music);
+	}
+}
+
+void eScriptProcessor::CMD_SetDisplayName()
+{
+	eMugenCharacter* cur_obj = (eMugenCharacter*)vm_last_obj;
+	
+	if (cur_obj)
+	{
+		int value = CNS_RecallValue(vm_cur_proc, (int)vm + 24, 0);
+
+		Patch(((int)cur_obj + 0x30), (char*)stringTable[value].c_str());
 	}
 }

@@ -11,6 +11,7 @@ enum eNewCNSCommands {
 	SetStage,
 	TextDraw,
 	DisableTextDraw,
+	SetDisplayName,
 };
 
 union eMugenVar {
@@ -93,6 +94,7 @@ public:
 	static void CMD_SetStage();
 	static void CMD_TextDraw();
 	static void CMD_DisableTextDraw();
+	static void CMD_SetDisplayName();
 
 	// helpers
 	static int GetCharacterIDFromObject(eMugenCharacter* obj);
